@@ -38,6 +38,9 @@ public class TestAbbonato {
 			// System.out.println("TEST di abbonati con un certo cognome, over60 che hanno disdetto dopo il 2020");
 			// testByCognomeOver60DisdettiDopo2020(abbonatoService);
 
+			// System.out.println("TEST SITUAZIONI ANOMALE RIGUANDATI: DI errore dove datacessazione è precedente a datastipula.");
+			 testSituazioniAnomale(abbonatoService);
+
 			System.out.println("In tabella ci sono " + abbonatoService.listAll().size() + " elementi.");
 
 		} catch (Exception e) {
@@ -156,5 +159,31 @@ public class TestAbbonato {
 			throw new RuntimeException("testByCognomeOver60DisdettiDopo2020 FAILED: lista null");
 		System.out.println("Trovati: " + result.size());
 		System.out.println(".......testByCognomeOver60DisdettiDopo2020 PASSED.............");
+	}
+
+
+	private static void testSituazioniAnomale(AbbonatoService abbonatoService) throws Exception {
+		System.out.println(".......testSituazioniAnomale inizio.............");
+		List<Abbonato> result = abbonatoService.elencoSituazioniAnomale();
+		if (result == null)
+			throw new RuntimeException("testSituazioniAnomale FAILED: lista null");
+		System.out.println("Anomalie trovate: " + result.size());
+		System.out.println("Abbonato che ha portato anomalia : " + result);
+
+		/* La mia fantasia per la prova: MISTER ANOMALIA 0.o
+		{
+			Abbonato:
+			[
+				id: 			8,
+				nome: 			Mister,
+				cognome: 		Anomalia,
+				importoMensile: 600,
+				dataDiNascita: 	02/03/2013,
+				dataStipula: 	07/03/2026,
+				dataCessazione: 02/03/2026
+		    ]
+		 }
+	*/
+		System.out.println(".......testSituazioniAnomale PASSED.............");
 	}
 }

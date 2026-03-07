@@ -254,7 +254,21 @@ public class AbbonatoDAOImpl extends AbstractMySQLDAO implements AbbonatoDAO {
 
 	@Override
 	public List<Abbonato> listSituazioniAnomale() throws Exception {
-		return null;
+		if (isNotActive())
+			throw new Exception("Connessione non attiva. Impossibile effettuare operazioni DAO.");
+
+		List<Abbonato> result = new ArrayList<>();
+		try (PreparedStatement ps = connection.prepareStatement(
+				"select * from abbonato where data_stipula is not null and data_cessazione is not null and data_cessazione < data_stipula order by id desc");
+			 ResultSet rs = ps.executeQuery()) {
+			while (rs.next()) {
+				result.add(UtilsClass.buildAbbonatoFromResultSet(rs));
+			}
+		} catch (Exception e) {
+			e.printStackTrace();
+			throw e;
+		}
+		return result;
 	}
 
 }
