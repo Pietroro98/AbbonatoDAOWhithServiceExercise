@@ -6,7 +6,6 @@ import it.prova.service.abbonato.AbbonatoService;
 import it.prova.utils.UtilsClass;
 
 import java.time.LocalDate;
-import java.time.format.DateTimeFormatter;
 import java.util.List;
 
 public class TestAbbonato {
@@ -18,17 +17,28 @@ public class TestAbbonato {
 
 		try
 		{
-
 			// testInserimentoNuovoAbbonato(abbonatoService);
 			System.out.println("In tabella ci sono " + abbonatoService.listAll().size() + " elementi.");
 
+			// System.out.println("Test update abbonato");
 			// testUpdateAbbonato(abbonatoService);
+
+			// testRimozioneAbbonato(abbonatoService);
 			System.out.println("In tabella ci sono " + abbonatoService.listAll().size() + " elementi.");
 
-			 testRimozioneAbbonato(abbonatoService);
+			// System.out.println("TEST ATTIVO CHE PAGA DI PIU");
+			// testAttivoChePagaDiPiu(abbonatoService);
+
+			// System.out.println("TEST CONTEGGIO ATTIVI IN INTEVALLO DI DATE");
+			 // testContaAttiviInIntervallo(abbonatoService);
+
+			// System.out.println("TEST SUBENTRATI IN ULTIMI MESI");
+			// testSubentratiUltimiSeiMesi(abbonatoService);
+
+			// System.out.println("TEST di abbonati con un certo cognome, over60 che hanno disdetto dopo il 2020");
+			// testByCognomeOver60DisdettiDopo2020(abbonatoService);
+
 			System.out.println("In tabella ci sono " + abbonatoService.listAll().size() + " elementi.");
-
-
 
 		} catch (Exception e) {
 			e.printStackTrace();
@@ -109,5 +119,42 @@ public class TestAbbonato {
 		System.out.println(".......testRimozioneAbbonato PASSED.............");
 	}
 
+	private static void testAttivoChePagaDiPiu(AbbonatoService abbonatoService) throws Exception {
+		System.out.println(".......testAttivoChePagaDiPiu inizio.............");
+		Abbonato result = abbonatoService.cercaAttivoChePagaDiPiu(LocalDate.now());
+		if (result == null)
+			throw new RuntimeException("testAttivoChePagaDiPiu FAILED: nessun abbonato attivo trovato");
+		System.out.println("Top attivo: " + result);
+		System.out.println(".......testAttivoChePagaDiPiu PASSED.............");
+	}
 
+	private static void testContaAttiviInIntervallo(AbbonatoService abbonatoService) throws Exception {
+		System.out.println(".......testContaAttiviInIntervallo inizio.............");
+		LocalDate inizio = LocalDate.now().minusMonths(1);
+		LocalDate fine = LocalDate.now().plusMonths(1);
+		int count = abbonatoService.contaAttiviInIntervallo(inizio, fine);
+		if (count < 0)
+			throw new RuntimeException("testContaAttiviInIntervallo FAILED: count negativo");
+		System.out.println("Conteggio abbonati attivi tra " + inizio + " e " + fine + " sono in totale: " + count);
+		System.out.println(".......testContaAttiviInIntervallo PASSED.............");
+	}
+
+	private static void testSubentratiUltimiSeiMesi(AbbonatoService abbonatoService) throws Exception {
+		System.out.println(".......testSubentratiUltimiSeiMesi inizio.............");
+		List<Abbonato> result = abbonatoService.elencoDistintoSubentratiUltimiSeiMesi(LocalDate.now());
+		if (result == null)
+			throw new RuntimeException("testSubentratiUltimiSeiMesi FAILED: lista null");
+		System.out.println("Subentrati ultimi 6 mesi: " + result.size());
+		System.out.println("Lista: " + result);
+		System.out.println(".......testSubentratiUltimiSeiMesi PASSED.............");
+	}
+
+	private static void testByCognomeOver60DisdettiDopo2020(AbbonatoService abbonatoService) throws Exception {
+		System.out.println(".......testByCognomeOver60DisdettiDopo2020 inizio.............");
+		List<Abbonato> result = abbonatoService.elencoByCognomeOver60ConDisdettaDopo("Rossi", LocalDate.of(2020, 12, 31));
+		if (result == null)
+			throw new RuntimeException("testByCognomeOver60DisdettiDopo2020 FAILED: lista null");
+		System.out.println("Trovati: " + result.size());
+		System.out.println(".......testByCognomeOver60DisdettiDopo2020 PASSED.............");
+	}
 }

@@ -4,6 +4,7 @@ import it.prova.model.Abbonato;
 
 import java.sql.Date;
 import java.sql.PreparedStatement;
+import java.sql.ResultSet;
 import java.sql.Types;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
@@ -54,5 +55,18 @@ public class UtilsClass {
             return LocalDate.now();
 
         return LocalDate.parse(normalized, formatter);
+    }
+
+
+    public static Abbonato buildAbbonatoFromResultSet(ResultSet rs) throws Exception {
+        Abbonato result = new Abbonato();
+        result.setNome(rs.getString("nome"));
+        result.setCognome(rs.getString("cognome"));
+        result.setImportoMensile(rs.getInt("importo_mensile"));
+        result.setDataDiNascita(rs.getDate("data_di_nascita") 	!= null ? rs.getDate("data_di_nascita").toLocalDate() 	: null);
+        result.setDataStipula(rs.getDate("data_stipula") 		!= null ? rs.getDate("data_stipula").toLocalDate() 		: null);
+        result.setDataCessazione(rs.getDate("data_cessazione") 	!= null ? rs.getDate("data_cessazione").toLocalDate() 	: null);
+        result.setId(rs.getLong("id"));
+        return result;
     }
 }

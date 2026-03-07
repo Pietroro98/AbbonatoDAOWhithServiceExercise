@@ -120,4 +120,81 @@ public class AbbonatoServiceImpl implements AbbonatoService {
 		return result;
 	}
 
+	@Override
+	public Abbonato cercaAttivoChePagaDiPiu(LocalDate dataRiferimento) throws Exception {
+		if (dataRiferimento == null)
+			throw new Exception("Valore di input non ammesso.");
+
+		Abbonato result = null;
+		try (Connection connection = MyConnection.getConnection(Constants.DRIVER_NAME, Constants.CONNECTION_URL)) {
+			abbonatoDAO.setConnection(connection);
+			result = abbonatoDAO.findAbbonatoAttivoChePagaDiPiu(dataRiferimento);
+		} catch (Exception e) {
+			e.printStackTrace();
+			throw e;
+		}
+		return result;
+	}
+
+	@Override
+	public int contaAttiviInIntervallo(LocalDate dataInizio, LocalDate dataFine) throws Exception {
+		if (dataInizio == null || dataFine == null || dataInizio.isAfter(dataFine))
+			throw new Exception("Valore di input non ammesso.");
+
+		int result = 0;
+		try (Connection connection = MyConnection.getConnection(Constants.DRIVER_NAME, Constants.CONNECTION_URL)) {
+			abbonatoDAO.setConnection(connection);
+			result = abbonatoDAO.countAttiviInIntervallo(dataInizio, dataFine);
+		} catch (Exception e) {
+			e.printStackTrace();
+			throw e;
+		}
+		return result;
+	}
+
+	@Override
+	public List<Abbonato> elencoDistintoSubentratiUltimiSeiMesi(LocalDate dataRiferimento) throws Exception {
+		if (dataRiferimento == null)
+			throw new Exception("Valore di input non ammesso.");
+
+		List<Abbonato> result = new ArrayList<>();
+		try (Connection connection = MyConnection.getConnection(Constants.DRIVER_NAME, Constants.CONNECTION_URL)) {
+			abbonatoDAO.setConnection(connection);
+			result = abbonatoDAO.listDistinctSubentratiUltimiSeiMesi(dataRiferimento);
+		} catch (Exception e) {
+			e.printStackTrace();
+			throw e;
+		}
+		return result;
+	}
+
+	@Override
+	public List<Abbonato> elencoByCognomeOver60ConDisdettaDopo(String cognome, LocalDate dataLimite) throws Exception {
+		if (cognome == null || cognome.trim().isEmpty() || dataLimite == null)
+			throw new Exception("Valore di input non ammesso.");
+
+		List<Abbonato> result = new ArrayList<>();
+		try (Connection connection = MyConnection.getConnection(Constants.DRIVER_NAME, Constants.CONNECTION_URL)) {
+			abbonatoDAO.setConnection(connection);
+			result = abbonatoDAO.listByCognomeOver60ConDisdettaDopo(cognome, dataLimite);
+		} catch (Exception e) {
+			e.printStackTrace();
+			throw e;
+		}
+		return result;
+	}
+
+	@Override
+	public List<Abbonato> elencoSituazioniAnomale() throws Exception {
+		List<Abbonato> result = new ArrayList<>();
+		try (Connection connection = MyConnection.getConnection(Constants.DRIVER_NAME, Constants.CONNECTION_URL)) {
+			abbonatoDAO.setConnection(connection);
+			result = abbonatoDAO.listSituazioniAnomale();
+		} catch (Exception e) {
+			e.printStackTrace();
+			throw e;
+		}
+		return result;
+	}
+
 }

@@ -21,4 +21,14 @@ public interface AbbonatoService {
 
 	public int rimuovi(Long idDaRimuovere) throws Exception;
 
+	public Abbonato cercaAttivoChePagaDiPiu(LocalDate dataRiferimento) throws Exception;
+
+	public int contaAttiviInIntervallo(LocalDate dataInizio, LocalDate dataFine) throws Exception;
+
+	public List<Abbonato> elencoDistintoSubentratiUltimiSeiMesi(LocalDate dataRiferimento) throws Exception;
+
+	public List<Abbonato> elencoByCognomeOver60ConDisdettaDopo(String cognome, LocalDate dataLimite) throws Exception;
+
+	public List<Abbonato> elencoSituazioniAnomale() throws Exception;
+
 }
