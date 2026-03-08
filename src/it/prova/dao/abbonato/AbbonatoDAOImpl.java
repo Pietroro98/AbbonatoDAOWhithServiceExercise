@@ -22,6 +22,12 @@ public class AbbonatoDAOImpl extends AbstractMySQLDAO implements AbbonatoDAO {
 		this.connection = connection;
 	}
 
+	/**
+	 * Recupera tutti gli abbonati presenti in tabella.
+	 *
+	 * @return lista completa degli abbonati
+	 * @throws Exception in caso di connessione non attiva o errore SQL
+	 */
 	@Override
 	public List<Abbonato> list() throws Exception {
 		// prima di tutto cerchiamo di capire se possiamo effettuare le operazioni
@@ -50,6 +56,13 @@ public class AbbonatoDAOImpl extends AbstractMySQLDAO implements AbbonatoDAO {
 		return result;
 	}
 
+	/**
+	 * Recupera un abbonato a partire dal suo identificativo.
+	 *
+	 * @param idInput id dell'abbonato da cercare
+	 * @return abbonato trovato oppure null se non esiste
+	 * @throws Exception in caso di input non valido, connessione non attiva o errore SQL
+	 */
 	@Override
 	public Abbonato get(Long idInput) throws Exception {
 		// prima di tutto cerchiamo di capire se possiamo effettuare le operazioni
@@ -79,6 +92,13 @@ public class AbbonatoDAOImpl extends AbstractMySQLDAO implements AbbonatoDAO {
 		return result;
 	}
 
+	/**
+	 * Inserisce un nuovo abbonato nel database.
+	 *
+	 * @param abbonatoInput dati dell'abbonato da inserire
+	 * @return numero righe inserite
+	 * @throws Exception in caso di input non valido, connessione non attiva o errore SQL
+	 */
 	@Override
 	public int insert(Abbonato abbonatoInput) throws Exception {
 		// prima di tutto cerchiamo di capire se possiamo effettuare le operazioni
@@ -106,6 +126,13 @@ public class AbbonatoDAOImpl extends AbstractMySQLDAO implements AbbonatoDAO {
 		return result;
 	}
 
+	/**
+	 * Aggiorna i dati di un abbonato esistente.
+	 *
+	 * @param abbonatoInput abbonato con id valorizzato e nuovi dati
+	 * @return numero righe aggiornate
+	 * @throws Exception in caso di input non valido, connessione non attiva o errore SQL
+	 */
 	@Override
 	public int update(Abbonato abbonatoInput) throws Exception {
 		// prima di tutto cerchiamo di capire se possiamo effettuare le operazioni
@@ -133,6 +160,13 @@ public class AbbonatoDAOImpl extends AbstractMySQLDAO implements AbbonatoDAO {
 		return result;
 	}
 
+	/**
+	 * Elimina un abbonato in base al suo id.
+	 *
+	 * @param idDaRimuovere id dell'abbonato da rimuovere
+	 * @return numero righe eliminate
+	 * @throws Exception in caso di input non valido, connessione non attiva o errore SQL
+	 */
 	@Override
 	public int delete(Long idDaRimuovere) throws Exception {
 		// prima di tutto cerchiamo di capire se possiamo effettuare le operazioni
@@ -153,6 +187,13 @@ public class AbbonatoDAOImpl extends AbstractMySQLDAO implements AbbonatoDAO {
 		return result;
 	}
 
+	/**
+	 * Restituisce l'abbonato attivo con importo mensile piu' alto alla data indicata.
+	 *
+	 * @param dataRiferimento data su cui verificare lo stato attivo
+	 * @return abbonato attivo con importo massimo, oppure {@code null} se assente
+	 * @throws Exception in caso di input non valido, connessione non attiva o errore SQL
+	 */
 	@Override
 	public Abbonato findAbbonatoAttivoChePagaDiPiu(LocalDate dataRiferimento) throws Exception {
 		if (isNotActive())
@@ -176,6 +217,14 @@ public class AbbonatoDAOImpl extends AbstractMySQLDAO implements AbbonatoDAO {
 		return result;
 	}
 
+	/**
+	 * Conta quanti abbonati risultano attivi nell'intervallo [dataInizio, dataFine].
+	 *
+	 * @param dataInizio data iniziale dell'intervallo
+	 * @param dataFine data finale dell'intervallo
+	 * @return numero di abbonati attivi nell'intervallo
+	 * @throws Exception in caso di input non valido, connessione non attiva o errore SQL
+	 */
 	@Override
 	public int countAttiviInIntervallo(LocalDate dataInizio, LocalDate dataFine) throws Exception {
 		if (isNotActive())
@@ -199,6 +248,14 @@ public class AbbonatoDAOImpl extends AbstractMySQLDAO implements AbbonatoDAO {
 		return result;
 	}
 
+	/**
+	 * Restituisce la lista distinta degli abbonati subentrati negli ultimi sei mesi
+	 * rispetto alla data di riferimento.
+	 *
+	 * @param dataRiferimento data da cui calcolare il semestre precedente
+	 * @return lista distinta di abbonati subentrati nel periodo
+	 * @throws Exception in caso di input non valido, connessione non attiva o errore SQL
+	 */
 	@Override
 	public List<Abbonato> listDistinctSubentratiUltimiSeiMesi(LocalDate dataRiferimento) throws Exception {
 		if (isNotActive())
@@ -226,6 +283,16 @@ public class AbbonatoDAOImpl extends AbstractMySQLDAO implements AbbonatoDAO {
 		return result;
 	}
 
+	/**
+	 * Cerca gli abbonati con un certo cognome, con eta' almeno pari a quella indicata,
+	 * che hanno disdetto dopo un "anno limite".
+	 *
+	 * @param cognome cognome da filtrare
+	 * @param etaMinima eta' minima richiesta
+	 * @param annoLimite anno limite per la data di disdetta
+	 * @return lista di abbonati che rispettano i criteri di filtro
+	 * @throws Exception in caso di input non valido, connessione non attiva o errore SQL
+	 */
 	@Override
 	public List<Abbonato> listByCognomeOverEtaConDisdettaDopoAnno(String cognome, Integer etaMinima, Integer annoLimite)
 			throws Exception {
@@ -236,13 +303,12 @@ public class AbbonatoDAOImpl extends AbstractMySQLDAO implements AbbonatoDAO {
 
 		List<Abbonato> result = new ArrayList<>();
 		LocalDate sogliaEtaMinima = LocalDate.now().minusYears(etaMinima);
-		LocalDate dataLimite = LocalDate.of(annoLimite, 12, 31);
 
 		try (PreparedStatement ps = connection.prepareStatement(
 				"select * from abbonato where cognome=? and data_di_nascita is not null and data_di_nascita <= ? and data_cessazione is not null and data_cessazione > ? order by data_cessazione desc, id desc")) {
 			ps.setString(1, cognome.trim());
 			ps.setDate(2, Date.valueOf(sogliaEtaMinima));
-			ps.setDate(3, Date.valueOf(dataLimite));
+			ps.setInt(3, annoLimite);
 			try (ResultSet rs = ps.executeQuery()) {
 				while (rs.next())
 					result.add(UtilsClass.buildAbbonatoFromResultSet(rs));
@@ -255,6 +321,12 @@ public class AbbonatoDAOImpl extends AbstractMySQLDAO implements AbbonatoDAO {
 		return result;
 	}
 
+	/**
+	 * Elenca le situazioni anomale in cui la data di cessazione è precedente alla data di stipula.
+	 *
+	 * @return lista di abbonati con dati temporalmente incoerenti
+	 * @throws Exception in caso di connessione non attiva o errore SQL
+	 */
 	@Override
 	public List<Abbonato> listSituazioniAnomale() throws Exception {
 		if (isNotActive())
