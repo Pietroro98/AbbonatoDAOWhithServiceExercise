@@ -27,7 +27,7 @@ public interface AbbonatoService {
 
 	public List<Abbonato> elencoDistintoSubentratiUltimiSeiMesi(LocalDate dataRiferimento) throws Exception;
 
-	public List<Abbonato> elencoByCognomeOver60ConDisdettaDopo(String cognome, LocalDate dataLimite) throws Exception;
+	public List<Abbonato> elencoByCognomeOverEtaConDisdettaDopoAnno(String cognome, Integer etaMinima, Integer annoLimite) throws Exception;
 
 	public List<Abbonato> elencoSituazioniAnomale() throws Exception;
 

@@ -14,7 +14,7 @@ public interface AbbonatoDAO extends IBaseDAO<Abbonato> {
 
 	List<Abbonato> listDistinctSubentratiUltimiSeiMesi(LocalDate dataRiferimento) throws Exception;
 
-	List<Abbonato> listByCognomeOver60ConDisdettaDopo(String cognome, LocalDate dataLimite) throws Exception;
+	List<Abbonato> listByCognomeOverEtaConDisdettaDopoAnno(String cognome, Integer etaMinima, Integer annoLimite) throws Exception;
 
 	List<Abbonato> listSituazioniAnomale() throws Exception;
 }

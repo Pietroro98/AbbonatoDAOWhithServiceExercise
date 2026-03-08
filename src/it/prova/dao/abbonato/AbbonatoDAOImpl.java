@@ -209,8 +209,9 @@ public class AbbonatoDAOImpl extends AbstractMySQLDAO implements AbbonatoDAO {
 		List<Abbonato> result = new ArrayList<>();
 		LocalDate seiMesiFa = dataRiferimento.minusMonths(6);
 
+		// La JOIN nella serve per collegare il risultato della sottoquery con la tabella originale, così posso ottenere tutti i campi della riga corretta.
 		try (PreparedStatement ps = connection.prepareStatement(
-				"select a.* from abbonato a inner join (select nome, cognome, data_di_nascita, max(data_stipula) as max_stipula from abbonato where data_stipula between ? and ? group by nome, cognome, data_di_nascita) b on a.nome=b.nome and a.cognome=b.cognome and a.data_di_nascita=b.data_di_nascita and a.data_stipula=b.max_stipula order by a.cognome, a.nome, a.id desc")) {
+				"select a.* from abbonato a join (select nome, cognome, data_di_nascita, max(data_stipula) as max_stipula from abbonato where data_stipula between ? and ? group by nome, cognome, data_di_nascita) b on a.nome=b.nome and a.cognome=b.cognome and a.data_di_nascita=b.data_di_nascita and a.data_stipula=b.max_stipula order by a.cognome, a.nome, a.id desc")) {
 			ps.setDate(1, Date.valueOf(seiMesiFa));
 			ps.setDate(2, Date.valueOf(dataRiferimento));
 			try (ResultSet rs = ps.executeQuery()) {
@@ -226,19 +227,21 @@ public class AbbonatoDAOImpl extends AbstractMySQLDAO implements AbbonatoDAO {
 	}
 
 	@Override
-	public List<Abbonato> listByCognomeOver60ConDisdettaDopo(String cognome, LocalDate dataLimite) throws Exception {
+	public List<Abbonato> listByCognomeOverEtaConDisdettaDopoAnno(String cognome, Integer etaMinima, Integer annoLimite)
+			throws Exception {
 		if (isNotActive())
 			throw new Exception("Connessione non attiva. Impossibile effettuare operazioni DAO.");
-		if (cognome == null || cognome.trim().isEmpty() || dataLimite == null)
+		if (cognome == null || cognome.trim().isEmpty() || etaMinima == null || etaMinima < 1 || annoLimite == null || annoLimite < 1900)
 			throw new Exception("Valore di input non ammesso.");
 
 		List<Abbonato> result = new ArrayList<>();
-		LocalDate sogliaOver60 = LocalDate.now().minusYears(60);
+		LocalDate sogliaEtaMinima = LocalDate.now().minusYears(etaMinima);
+		LocalDate dataLimite = LocalDate.of(annoLimite, 12, 31);
 
 		try (PreparedStatement ps = connection.prepareStatement(
 				"select * from abbonato where cognome=? and data_di_nascita is not null and data_di_nascita <= ? and data_cessazione is not null and data_cessazione > ? order by data_cessazione desc, id desc")) {
 			ps.setString(1, cognome.trim());
-			ps.setDate(2, Date.valueOf(sogliaOver60));
+			ps.setDate(2, Date.valueOf(sogliaEtaMinima));
 			ps.setDate(3, Date.valueOf(dataLimite));
 			try (ResultSet rs = ps.executeQuery()) {
 				while (rs.next())

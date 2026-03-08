@@ -169,14 +169,14 @@ public class AbbonatoServiceImpl implements AbbonatoService {
 	}
 
 	@Override
-	public List<Abbonato> elencoByCognomeOver60ConDisdettaDopo(String cognome, LocalDate dataLimite) throws Exception {
-		if (cognome == null || cognome.trim().isEmpty() || dataLimite == null)
+	public List<Abbonato> elencoByCognomeOverEtaConDisdettaDopoAnno(String cognome, Integer etaMinima, Integer annoLimite) throws Exception {
+		if (cognome == null || cognome.trim().isEmpty() || etaMinima == null || etaMinima < 1 || annoLimite == null || annoLimite < 1900)
 			throw new Exception("Valore di input non ammesso.");
 
 		List<Abbonato> result = new ArrayList<>();
 		try (Connection connection = MyConnection.getConnection(Constants.DRIVER_NAME, Constants.CONNECTION_URL)) {
 			abbonatoDAO.setConnection(connection);
-			result = abbonatoDAO.listByCognomeOver60ConDisdettaDopo(cognome, dataLimite);
+			result = abbonatoDAO.listByCognomeOverEtaConDisdettaDopoAnno(cognome, etaMinima, annoLimite);
 		} catch (Exception e) {
 			e.printStackTrace();
 			throw e;

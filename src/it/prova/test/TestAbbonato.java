@@ -36,10 +36,10 @@ public class TestAbbonato {
 			// testSubentratiUltimiSeiMesi(abbonatoService);
 
 			// System.out.println("TEST di abbonati con un certo cognome, over60 che hanno disdetto dopo il 2020");
-			// testByCognomeOver60DisdettiDopo2020(abbonatoService);
+				 testByCognomeOverEtaConDisdettaDopoAnno(abbonatoService);
 
 			// System.out.println("TEST SITUAZIONI ANOMALE RIGUANDATI: DI errore dove datacessazione è precedente a datastipula.");
-			 testSituazioniAnomale(abbonatoService);
+			// testSituazioniAnomale(abbonatoService);
 
 			System.out.println("In tabella ci sono " + abbonatoService.listAll().size() + " elementi.");
 
@@ -152,13 +152,14 @@ public class TestAbbonato {
 		System.out.println(".......testSubentratiUltimiSeiMesi PASSED.............");
 	}
 
-	private static void testByCognomeOver60DisdettiDopo2020(AbbonatoService abbonatoService) throws Exception {
-		System.out.println(".......testByCognomeOver60DisdettiDopo2020 inizio.............");
-		List<Abbonato> result = abbonatoService.elencoByCognomeOver60ConDisdettaDopo("Rossi", LocalDate.of(2020, 12, 31));
+	private static void testByCognomeOverEtaConDisdettaDopoAnno(AbbonatoService abbonatoService) throws Exception {
+		System.out.println(".......testByCognomeOverEtaConDisdettaDopoAnno inizio.............");
+		List<Abbonato> result = abbonatoService.elencoByCognomeOverEtaConDisdettaDopoAnno("Rossi", 60, 2020);
 		if (result == null)
-			throw new RuntimeException("testByCognomeOver60DisdettiDopo2020 FAILED: lista null");
+			throw new RuntimeException("testByCognomeOverEtaConDisdettaDopoAnno FAILED: lista null");
 		System.out.println("Trovati: " + result.size());
-		System.out.println(".......testByCognomeOver60DisdettiDopo2020 PASSED.............");
+		System.out.println("Lista: " + result);
+		System.out.println(".......testByCognomeOverEtaConDisdettaDopoAnno PASSED.............");
 	}
 
 
